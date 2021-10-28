@@ -23,9 +23,11 @@ async function run(){
 
         await client.connect();
 
-        app.get('/', (req, res) => {
-            res.send("running this server...")
-        })
+        const database = client.db('travel-booking');
+        const users = database.collection('users');
+        const result = await users.insertOne({name: 'aal emraaan', age: 24});
+        res.send(result);
+
 
     }
     finally{
