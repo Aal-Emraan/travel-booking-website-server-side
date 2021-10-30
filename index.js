@@ -13,7 +13,6 @@ app.use(express.json());
 //---------------------
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wd6nd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-console.log(uri);
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 //---------------------
@@ -25,8 +24,39 @@ async function run(){
 
         const database = client.db('travel-booking');
         const users = database.collection('users');
-        const result = await users.insertOne({name: 'aal emraaan', age: 24});
-        res.send(result);
+        const plans = database.collection('plans');
+        const myOrders = database.collection('orders');
+
+        app.get('/', (req, res) => {
+            res.send('hwllo');
+            console.log("boor");
+        })
+        
+        // get all plans
+        app.get('/tours', async (req,res) => {
+            const allPlans = await plans.find({}).toArray();
+            res.send(allPlans);
+        })
+
+        // get all orders
+        app.get('/manageallbookings', async (req, res) => {
+            const allOrders = await myOrders.find({}).toArray();
+            res.send(allOrders);
+        })
+
+        // add new plans
+        app.post('/addnewplan', async(req, res) => {
+            console.log(req.body);
+            const result = await plans.insertOne(req.body);
+            res.send(result)
+        })
+
+        // post orders to database
+        app.post('/order', async (req, res) => {
+            const result = await myOrders.insertOne(req.body);
+            // console.log(req.body);
+            res.send(req.body)
+        })
 
 
     }
