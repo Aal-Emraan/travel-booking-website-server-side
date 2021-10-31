@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
@@ -29,7 +30,6 @@ async function run(){
 
         app.get('/', (req, res) => {
             res.send('hwllo');
-            console.log("boor");
         })
         
         // get all plans
@@ -44,9 +44,42 @@ async function run(){
             res.send(allOrders);
         })
 
+        // get my orders
+        app.get('/bookings/:email', async(req, res) => {
+            // const query = {email: req.params.email};
+            const result = await myOrders.find({email: req.params.email}).toArray();
+            console.log(result);
+            res.send(result);
+        })
+
+
+        //update status 
+        app.put('/status/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            // this option instructs the method to create a document if no documents match the filter
+            const options = { upsert: true };
+            // create a document that sets the plot of the movie
+            const updateDoc = {
+              $set: {
+                status: `Approved`
+              },
+            };
+            const result = await myOrders.updateOne(filter, updateDoc, options);
+            // res.send(result);
+        })
+
+        // delete bookings
+        app.delete('/delete/:id', async(req, res) =>{
+            const id = req.params.id;
+
+            const query = {_id: ObjectId(id)};
+            const result = await myOrders.deleteOne(query);
+            res.send(result)
+        })
+
         // add new plans
         app.post('/addnewplan', async(req, res) => {
-            console.log(req.body);
             const result = await plans.insertOne(req.body);
             res.send(result)
         })
@@ -76,3 +109,6 @@ app.listen(port, () => {
 // git repository
 
 // https://github.com/programming-hero-web-course1/tourism-or-delivery-website-server-side-Aal-Emraan
+
+
+// heroku link: https://dry-beach-57081.herokuapp.com/
