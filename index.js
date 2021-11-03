@@ -48,7 +48,7 @@ async function run(){
         app.get('/bookings/:email', async(req, res) => {
             // const query = {email: req.params.email};
             const result = await myOrders.find({email: req.params.email}).toArray();
-            console.log(result);
+            // console.log(result);
             res.send(result);
         })
 
@@ -66,7 +66,7 @@ async function run(){
               },
             };
             const result = await myOrders.updateOne(filter, updateDoc, options);
-            // res.send(result);
+            res.send(result);
         })
 
         // delete bookings
